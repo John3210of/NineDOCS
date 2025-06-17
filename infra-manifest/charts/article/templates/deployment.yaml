@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    version: "{{ .Values.global.image.tag }}"
+spec:
+  replicas: {{ .Values.global.replicaCount }}
+  strategy:
+    canary:
+      maxSurge: 1
+      maxUnavailable: 1
+      steps:
+      - setWeight: 50
+      - pause: {}
+      - setWeight: 100
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        version: "{{ .Values.global.image.tag }}"
+      annotations:
+        rollouts.argoproj.io/revision: "{{ .Values.global.image.tag }}"
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
+        imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.global.service.port }}
+
+        resources:
+          requests:
+            memory: "256Mi"  
+            cpu: "100m"      
+          limits:
+            memory: "512Mi" 
+            cpu: "200m"     
+
+        readinessProbe:
+          httpGet:
+            path: /api/v1/article/health/
+            port: {{ .Values.global.service.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 30
+          failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /api/v1/article/health/
+            port: {{ .Values.global.service.port }}
+          initialDelaySeconds: 20
+          periodSeconds: 30
+          failureThreshold: 5
+
+        env:
+        - name: SECRET_KEY
+          value: "{{ .Values.global.env.SECRET_KEY }}"
+        - name: DEBUG
+          value: "{{ .Values.global.env.DEBUG }}"
+        - name: DB_NAME
+          value: "{{ .Values.global.env.DB_NAME }}"
+        - name: DB_USER
+          value: "{{ .Values.global.env.DB_USER }}"
+        - name: DB_PASSWORD
+          value: "{{ .Values.global.env.DB_PASSWORD }}"
+        - name: DB_HOST
+          value: "{{ .Values.global.env.DB_HOST }}"
+        - name: DB_PORT
+          value: "{{ .Values.global.env.DB_PORT }}"
+        - name: MAIL_SERVER_URL
+          value: "{{ .Values.global.env.MAIL_SERVER_URL }}"
+        - name: DISCORD_WEBHOOK_URL
+          value: "{{ .Values.global.env.DISCORD_WEBHOOK_URL }}"
+        - name: NINEDOCS_SERVER_URL
+          value: "{{ .Values.global.env.NINEDOCS_SERVER_URL }}"

@@ -1,0 +1,29 @@
+repositories:
+  - name: stable
+    url: https://charts.helm.sh/stable
+
+releases:
+  - name: article
+    chart: ./charts/article
+    values:
+      - ./charts/article/values.yaml
+  - name: mail
+    chart: ./charts/mail
+    values:
+      - ./charts/mail/values.yaml
+  - name: service-aggregator
+    chart: ./charts/service-aggregator
+    values:
+      - ./charts/service-aggregator/values.yaml
+  - name: subcontents
+    chart: ./charts/subcontents
+    values:
+      - ./charts/subcontents/values.yaml
+  - name: user
+    chart: ./charts/user
+    values:
+      - ./charts/user/values.yaml
+  - name: cronjob
+    chart: ./charts/cronjob-batch
+    values:
+      - ./charts/cronjob-batch/values.yaml

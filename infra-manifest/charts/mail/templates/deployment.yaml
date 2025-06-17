@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "256Mi"
+            limits:
+              cpu: "100m"
+              memory: "512Mi"
+          env:
+            - name: SERVICE_NAME
+              value: "{{ .Values.env.SERVICE_NAME }}"
+            - name: GMAIL_SMTP_HOST
+              value: "{{ .Values.env.GMAIL_SMTP_HOST }}"
+            - name: GMAIL_SMTP_PASSWORD
+              value: "{{ .Values.env.GMAIL_SMTP_PASSWORD }}"
+            - name: GMAIL_SMTP_USER
+              value: "{{ .Values.env.GMAIL_SMTP_USER }}"
+            - name: GMAIL_SMTP_PORT
+              value: "{{ .Values.env.GMAIL_SMTP_PORT }}"
+            - name: GMAIL_SMTP_SECURE
+              value: "{{ .Values.env.GMAIL_SMTP_SECURE }}"
+            - name: AWS_ACCESS_KEY
+              value: "{{ .Values.env.AWS_ACCESS_KEY }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.AWS_SECRET_ACCESS_KEY }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.AWS_REGION }}"
+            - name: AWS_SENDER_MAIL
+              value: "{{ .Values.env.AWS_SENDER_MAIL }}"

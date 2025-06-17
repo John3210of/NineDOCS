@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-aggregator-env-config
+data:
+  PROFILE: 'prod'
+  USER_URL: 'http://user:80'
+  ARTICLE_URL: 'http://article:8000'
+  SUB_CONTENTS_URL: 'http://subcontents:80'

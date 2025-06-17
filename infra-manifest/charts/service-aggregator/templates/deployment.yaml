@@ -1,0 +1,37 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "service-aggregator-deployment"
+  labels:
+    app: "service-aggregator-deployment"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "service-aggregator-container"
+  template:
+    metadata:
+      labels:
+        app: "service-aggregator-container"
+        version: "V{{ .Values.image.tag }}"
+    spec:
+      containers:
+      - name: "service-aggregator-container"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http      
+          containerPort: {{ .Values.service.port }}
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "1024Mi"
+            cpu: "200m"
+        envFrom:
+        - configMapRef:
+            name: "service-aggregator-env-config"
+        - secretRef:
+            name: "service-aggregator-env-secret"
+

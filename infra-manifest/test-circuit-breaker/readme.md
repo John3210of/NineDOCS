@@ -1,0 +1,1 @@
+## Test for circuit-breaker and canary

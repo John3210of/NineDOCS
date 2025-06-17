@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: subcontents-dr
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: subcontents.{{ .Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 1000  # Node.js 기반 서비스는 많은 동시 요청 처리 가능
+      http:
+        http1MaxPendingRequests: 500  # 대량의 요청을 수용 가능
+        maxRequestsPerConnection: 50  # Keep-Alive를 오래 유지 가능
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 5s
+      baseEjectionTime: 15s
+      maxEjectionPercent: 33

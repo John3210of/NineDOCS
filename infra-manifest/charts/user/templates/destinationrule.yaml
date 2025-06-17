@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: user-service-dr
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: {{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 600  # JVM 기반 서비스는 적절한 제한 필요
+      http:
+        http1MaxPendingRequests: 150
+        maxRequestsPerConnection: 20  # GC 부담을 줄이기 위해 제한
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50

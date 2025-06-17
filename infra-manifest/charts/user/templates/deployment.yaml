@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    version: "{{ .Values.image.tag }}"
+spec:
+  replicas: 1
+  strategy:
+    canary:
+      maxSurge: 1
+      maxUnavailable: 1
+      steps:
+      - setWeight: {{ .Values.Deploy.initialWeight }}  # 50% Canary 트래픽
+      - setWeight: {{ .Values.Deploy.finalWeight }}    # Promote 후 전체 트래픽
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        version: "{{ .Values.image.tag }}"
+      annotations:
+        rollouts.argoproj.io/revision: "{{ .Values.image.tag }}"
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - name: http
+          containerPort: 8080
+
+
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        envFrom:
+        - configMapRef:
+            name: "user-env-config"
+        - secretRef:
+            name: "user-env-secret"

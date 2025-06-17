@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-env-config
+data:
+  PROFILE: prod
+  RDS_URL: jdbc:mysql://ec2-13-209-88-188.ap-northeast-2.compute.amazonaws.com:3306/user?serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&zeroDateTimeBehavior=convertToNull&cacheDefaultTimezone=false
+  REDIS_HOST: 3.35.242.78
+  EMAIL_URL: http://mail:3000

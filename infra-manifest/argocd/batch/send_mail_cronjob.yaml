@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: send-mail-cronjob
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nine-docs/infra-manifest
+    path: charts/batch/send-mail-cronjob
+    targetRevision: main
+    helm:
+      releaseName: send-mail-cronjob-release
+      valueFiles:
+      - ../../article/common_values.yaml
+      - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,5 @@
+global:
+  replicaCount: 1
+cronJob:
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

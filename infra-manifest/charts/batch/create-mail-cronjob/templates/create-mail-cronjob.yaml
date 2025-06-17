@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  schedule: "0 14 * * *"
+  successfulJobsHistoryLimit: {{ .Values.cronJob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}
+        spec:
+          containers:
+          - name: create-mail-batch
+            image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
+            imagePullPolicy: "{{ .Values.global.image.pullPolicy }}"
+            command: ["python", "manage.py", "create_mail_batch"]
+            env:
+            - name: SECRET_KEY
+              value: "{{ .Values.global.env.SECRET_KEY }}"
+            - name: DEBUG
+              value: "{{ .Values.global.env.DEBUG }}"
+            - name: DB_NAME
+              value: "{{ .Values.global.env.DB_NAME }}"
+            - name: DB_USER
+              value: "{{ .Values.global.env.DB_USER }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.global.env.DB_PASSWORD }}"
+            - name: DB_HOST
+              value: "{{ .Values.global.env.DB_HOST }}"
+            - name: DB_PORT
+              value: "{{ .Values.global.env.DB_PORT }}"
+            - name: MAIL_SERVER_URL
+              value: "{{ .Values.global.env.MAIL_SERVER_URL }}"
+            - name: DISCORD_WEBHOOK_URL
+              value: "{{ .Values.global.env.DISCORD_WEBHOOK_URL }}"
+            - name: NINEDOCS_SERVER_URL
+              value: "{{ .Values.global.env.NINEDOCS_SERVER_URL }}"
+            resources:
+              requests:
+                cpu: "80m"
+                memory: "256Mi"
+              limits:
+                cpu: "150m"
+                memory: "512Mi"
+
+          restartPolicy: OnFailure

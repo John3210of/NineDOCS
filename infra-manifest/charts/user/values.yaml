@@ -1,0 +1,6 @@
+image:
+  repository: gunwoda/ninedocs-user-server
+  tag: V-ae808fa
+Deploy:
+  initialWeight: 50
+  finalWeight: 100

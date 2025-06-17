@@ -1,0 +1,11 @@
+replicaCount: 5
+
+image:
+  repository: kiel0103/ninedocs-service-aggregator
+  tag: V-6a87eee
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  # type: NodePort
+  port: 8080

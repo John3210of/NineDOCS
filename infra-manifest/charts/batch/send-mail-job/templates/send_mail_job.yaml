@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}-send-mail
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: send-mail-job
+        image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
+        imagePullPolicy: "{{ .Values.global.image.pullPolicy }}"
+        command: ["python", "manage.py", "send_mail_batch"]
+        env:
+        - name: SECRET_KEY
+          value: "{{ .Values.global.env.SECRET_KEY }}"
+        - name: DEBUG
+          value: "{{ .Values.global.env.DEBUG }}"
+        - name: DB_NAME
+          value: "{{ .Values.global.env.DB_NAME }}"
+        - name: DB_USER
+          value: "{{ .Values.global.env.DB_USER }}"
+        - name: DB_PASSWORD
+          value: "{{ .Values.global.env.DB_PASSWORD }}"
+        - name: DB_HOST
+          value: "{{ .Values.global.env.DB_HOST }}"
+        - name: DB_PORT
+          value: "{{ .Values.global.env.DB_PORT }}"
+        - name: MAIL_SERVER_URL
+          value: "{{ .Values.global.env.MAIL_SERVER_URL }}"
+        - name: DISCORD_WEBHOOK_URL
+          value: "{{ .Values.global.env.DISCORD_WEBHOOK_URL }}"
+        resources:
+          limits:
+            cpu: {{ .Values.global.resources.limits.cpu }}
+            memory: {{ .Values.global.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.global.resources.requests.cpu }}
+            memory: {{ .Values.global.resources.requests.memory }}
+      restartPolicy: Never

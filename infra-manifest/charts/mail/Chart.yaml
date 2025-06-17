@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mail
+description: A Helm chart for deploying the mail service
+version: 0.0.0

@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ .Release.Name }}-dr
+  namespace: {{ .Release.Namespace }}
+spec:
+  host: {{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 500  # Django는 DB 연결을 많이 사용하므로 제한 필요
+      http:
+        http1MaxPendingRequests: 200  # 동시 요청 제한 (Blocking I/O 대비)
+        maxRequestsPerConnection: 20  # Keep-Alive를 너무 오래 유지하면 GC 부담 증가
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
